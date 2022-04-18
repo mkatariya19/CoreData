@@ -50,7 +50,19 @@ class ViewController: UIViewController {
             (action) in
             
             let textfield = alert.textFields![0]
+             
+            let newPerson = Person(context: self.context)
+            newPerson.name = textfield.text
+            newPerson.age = 22
+            newPerson.gender = "Female"
+            
+            do {
+                self.context.save()
         }
+            catch{
+                
+            }
+            self.fetchPeople()
         
         alert.addAction(submitButton)
         self.present(alert, animated: true, completion: nil)
@@ -81,6 +93,45 @@ extension ViewController: UITableViewDataSource, UITableViewDelegate{
         
         let textfield = alert.textFields![0]
         textfield.text = person.name
+        
+        let saveButton = UIAlertAction(title: "Save", style: .default) {
+            (action) in
+            let textfield = alert.textFields![0]
+            
+            person.name = textfield.text
+            
+            do {try self.context.save()
+        }
+            catch{
+                
+            }
+            self.fetchPeople()
+        
+        alert.addAction(saveButton)
+        
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    func tableView(_tableView: UITableView, trailingSwipeActionConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let action = UIContextualAction(style: .destructive, title: "Delete") {
+            (action), view, completionHandler) in
+            
+            let personToRemove = self.items![indexPath.row]
+            
+            self.context.delete(personToRemove)
+            
+            do
+            {
+                try view.context.save()
+        }
+            catch{
+                
+            }
+            
+            self.fetchPeople()
+        }
+        return UISwipeActionsConfiguration(actions: [action])
     }
 }
 
