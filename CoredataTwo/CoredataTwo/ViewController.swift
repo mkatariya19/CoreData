@@ -27,10 +27,28 @@ class ViewController: UIViewController {
         
         // Do any additional setup after loading the view.
     }
+    func relationshipOne() {
+        var family = Family(context: context)
+        family.name = "OneFamily"
+        var person = Person(context: context)
+        person.name = "Manish"
+        person.family = family
+        
+        try! context.save()
+    }
     
     func fetchPeople(){
         do {
-            self.items = try context.fetch(Person.fetchRequest())
+            let request = Person.fetchRequest() as NSFetchRequest<Person>
+            
+            //let pred = NSPredicate(format: "name CONTAINS 'Ted'")
+           // request.predicate = pred
+            
+            let sort = NSSortDescriptor(key: "name", ascending: true)
+            request.sortDescriptors = [sort]
+                                        
+            
+            self.items = try context.fetch(request)
             DispatchQueue.main.async {
                 self.tableView.reloadData()
             }
